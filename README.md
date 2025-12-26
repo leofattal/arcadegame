@@ -14,8 +14,11 @@ A web-based arcade gaming platform with **no sign-in required**. Play classic ar
 ## 🎯 Current Games
 
 1. **🧱 Brick Breaker** - Classic paddle and ball game with multiple levels
-2. **🐍 Snake** - Eat, grow, and don't hit yourself! Three difficulty levels.
-3. **👊 Street Brawler** - Fight against CPU in an action-packed fighting game!
+2. **🐍 Snake** - Eat, grow, and don't hit yourself! Three difficulty levels
+3. **👊 Street Brawler** - Fight against CPU in an action-packed fighting game
+4. **🚀 Space Shooter** - Defend Earth from alien invaders with increasing difficulty
+5. **🎴 Memory Match** - Test your memory with matching pairs (3 difficulty modes)
+6. **🏃 Endless Runner** - Jump over obstacles and collect coins in this fast-paced game
 
 ## 🚀 Quick Start
 
@@ -199,17 +202,19 @@ Edit CSS variables in `css/styles.css`:
 - [x] Brick Breaker game
 - [x] Snake game with 3 difficulty levels
 - [x] Street Brawler fighting game
+- [x] Space Shooter game
+- [x] Memory Match game
+- [x] Endless Runner game
 - [x] Local storage for high scores
 - [x] Settings modal
 - [x] Responsive design
 - [x] Mobile controls for touch devices
-- [ ] Space Shooter game
-- [ ] Memory Match game
-- [ ] Endless Runner game
 - [ ] Sound effects and music
 - [ ] Daily challenges (local)
 - [ ] Shareable score screenshots
+- [ ] Leaderboard (local storage based)
 - [ ] Service worker for offline play
+- [ ] More games (Tetris, Pac-Man style, etc.)
 
 ## 🤝 Contributing
 

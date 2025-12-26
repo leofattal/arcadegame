@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Match - Arcade Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #8338ec, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: 2px solid #8338ec;
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .control-btn:hover {
+            background: #8338ec;
+            transform: scale(1.05);
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat {
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            color: #06ffa5;
+            font-weight: bold;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(15, 52, 96, 0.3);
+            border-radius: 16px;
+            border: 2px solid rgba(131, 56, 236, 0.3);
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            border: 3px solid #8338ec;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            transition: all 0.3s;
+            position: relative;
+            transform-style: preserve-3d;
+            min-height: 100px;
+        }
+
+        .card:hover:not(.flipped):not(.matched) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(131, 56, 236, 0.5);
+        }
+
+        .card.flipped {
+            background: linear-gradient(135deg, #8338ec, #ff006e);
+            border-color: #ff006e;
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            background: linear-gradient(135deg, #06ffa5, #3a86ff);
+            border-color: #06ffa5;
+            cursor: default;
+            animation: pulse 0.5s;
+        }
+
+        .card.wrong {
+            animation: shake 0.5s;
+            border-color: #ff006e;
+        }
+
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+            font-size: 2.5rem;
+        }
+
+        .card-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+            transform: rotateY(180deg);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .difficulty-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: 2px solid #8338ec;
+            background: #0f3460;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .difficulty-btn:hover,
+        .difficulty-btn.active {
+            background: #8338ec;
+            box-shadow: 0 0 20px rgba(131, 56, 236, 0.4);
+        }
+
+        .game-over-screen, .pause-screen, .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .screen-content {
+            background: #16213e;
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid #8338ec;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .screen-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #8338ec, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .screen-content p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #b8c1ec;
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            margin: 10px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8338ec, #ff006e);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(131, 56, 236, 0.4);
+        }
+
+        .btn-secondary {
+            background: #0f3460;
+            color: white;
+            border: 2px solid #8338ec;
+        }
+
+        .btn-secondary:hover {
+            background: #8338ec;
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .game-board {
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .card {
+                font-size: 2rem;
+                min-height: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-board {
+                gap: 8px;
+                padding: 10px;
+            }
+
+            .card {
+                font-size: 1.5rem;
+                min-height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">🎴 Memory Match</h1>
+            <div class="game-controls">
+                <button id="pauseBtn" class="control-btn">⏸️ Pause</button>
+                <button id="restartBtn" class="control-btn">🔄 Restart</button>
+                <button id="fullscreenBtn" class="control-btn">⛶ Fullscreen</button>
+                <button id="quitBtn" class="control-btn">🏠 Quit</button>
+            </div>
+        </div>
+
+        <div class="difficulty-selector" id="difficultySelector">
+            <h3 style="margin-bottom: 15px; color: #b8c1ec;">Choose Difficulty:</h3>
+            <button class="difficulty-btn active" data-pairs="6">🌱 Easy (6 pairs)</button>
+            <button class="difficulty-btn" data-pairs="8">⚡ Medium (8 pairs)</button>
+            <button class="difficulty-btn" data-pairs="12">🔥 Hard (12 pairs)</button>
+        </div>
+
+        <div class="game-stats">
+            <div class="stat">
+                Moves: <span class="stat-value" id="movesDisplay">0</span>
+            </div>
+            <div class="stat">
+                Matches: <span class="stat-value" id="matchesDisplay">0 / 0</span>
+            </div>
+            <div class="stat">
+                Time: <span class="stat-value" id="timerDisplay">0:00</span>
+            </div>
+            <div class="stat">
+                Best Time: <span class="stat-value" id="bestTimeDisplay">--</span>
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard">
+            <!-- Cards will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="startScreen" class="start-screen" style="display: flex;">
+        <div class="screen-content">
+            <h2>🎴 Memory Match</h2>
+            <p>Test your memory!</p>
+            <p style="font-size: 1rem; margin: 20px 0;">Find all matching pairs in the fastest time possible!</p>
+            <button class="btn-large btn-primary" onclick="startGame()">▶️ Start Game</button>
+            <button class="btn-large btn-secondary" onclick="quitGame()">🏠 Main Menu</button>
+        </div>
+    </div>
+
+    <!-- Pause Screen -->
+    <div id="pauseScreen" class="pause-screen">
+        <div class="screen-content">
+            <h2>⏸️ Paused</h2>
+            <p>Memory cards are waiting...</p>
+            <button class="btn-large btn-primary" onclick="resumeGame()">▶️ Resume</button>
+            <button class="btn-large btn-secondary" onclick="restartGame()">🔄 Restart</button>
+            <button class="btn-large btn-secondary" onclick="quitGame()">🏠 Quit</button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="game-over-screen">
+        <div class="screen-content">
+            <h2>🎉 Congratulations!</h2>
+            <p id="completionMessage"></p>
+            <p id="statsMessage"></p>
+            <p id="bestTimeMessage"></p>
+            <button class="btn-large btn-primary" onclick="restartGame()">🔄 Play Again</button>
+            <button class="btn-large btn-secondary" onclick="quitGame()">🏠 Main Menu</button>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="memory-match.js"></script>
+</body>
+</html>

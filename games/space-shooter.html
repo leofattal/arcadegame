@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Shooter - Arcade Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #3a86ff, #06ffa5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: 2px solid #3a86ff;
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .control-btn:hover {
+            background: #3a86ff;
+            transform: scale(1.05);
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            color: #06ffa5;
+            font-weight: bold;
+        }
+
+        #gameCanvas {
+            border: 3px solid #3a86ff;
+            border-radius: 12px;
+            background: #000;
+            display: block;
+            box-shadow: 0 10px 40px rgba(58, 134, 255, 0.5);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(15, 52, 96, 0.5);
+            border-radius: 12px;
+            border: 2px solid rgba(58, 134, 255, 0.3);
+        }
+
+        .instructions h3 {
+            color: #06ffa5;
+            margin-bottom: 10px;
+        }
+
+        .instructions p {
+            color: #b8c1ec;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .mobile-controls {
+            display: none;
+            margin-top: 20px;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .move-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 5px;
+        }
+
+        .mobile-btn {
+            background: rgba(58, 134, 255, 0.2);
+            border: 2px solid #3a86ff;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mobile-btn:active {
+            background: #3a86ff;
+            transform: scale(0.95);
+        }
+
+        .move-up { grid-column: 2; grid-row: 1; }
+        .move-left { grid-column: 1; grid-row: 2; }
+        .move-right { grid-column: 3; grid-row: 2; }
+        .move-down { grid-column: 2; grid-row: 3; }
+
+        .fire-btn {
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #ff006e, #ff4d00);
+            border: 3px solid #ff006e;
+        }
+
+        .game-over-screen, .pause-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .screen-content {
+            background: #16213e;
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid #3a86ff;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .screen-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #3a86ff, #06ffa5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .screen-content p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #b8c1ec;
+        }
+
+        .final-score {
+            font-size: 3rem;
+            color: #06ffa5;
+            margin: 20px 0;
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            margin: 10px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3a86ff, #06ffa5);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(58, 134, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: #0f3460;
+            color: white;
+            border: 2px solid #3a86ff;
+        }
+
+        .btn-secondary:hover {
+            background: #3a86ff;
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .mobile-controls {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">🚀 Space Shooter</h1>
+            <div class="game-controls">
+                <button id="pauseBtn" class="control-btn">⏸️ Pause</button>
+                <button id="restartBtn" class="control-btn">🔄 Restart</button>
+                <button id="fullscreenBtn" class="control-btn">⛶ Fullscreen</button>
+                <button id="quitBtn" class="control-btn">🏠 Quit</button>
+            </div>
+        </div>
+
+        <div class="game-stats">
+            <div class="stat">
+                Score: <span class="stat-value" id="scoreDisplay">0</span>
+            </div>
+            <div class="stat">
+                Lives: <span class="stat-value" id="livesDisplay">3</span>
+            </div>
+            <div class="stat">
+                Level: <span class="stat-value" id="levelDisplay">1</span>
+            </div>
+            <div class="stat">
+                High Score: <span class="stat-value" id="highScoreDisplay">0</span>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <div class="mobile-controls">
+            <div class="move-pad">
+                <button class="mobile-btn move-up" id="mobileUp">▲</button>
+                <button class="mobile-btn move-left" id="mobileLeft">◄</button>
+                <button class="mobile-btn move-right" id="mobileRight">►</button>
+                <button class="mobile-btn move-down" id="mobileDown">▼</button>
+            </div>
+            <button class="mobile-btn fire-btn" id="mobileFire">🔥 FIRE</button>
+        </div>
+
+        <div class="instructions">
+            <h3>🎮 How to Play</h3>
+            <p><strong>Desktop:</strong> Arrow Keys or WASD to move, Space to fire</p>
+            <p><strong>Mobile:</strong> Use direction pad and fire button</p>
+            <p><strong>Goal:</strong> Destroy all alien invaders before they reach Earth!</p>
+            <p><strong>Tips:</strong> Each level increases enemy count and speed</p>
+        </div>
+    </div>
+
+    <!-- Pause Screen -->
+    <div id="pauseScreen" class="pause-screen">
+        <div class="screen-content">
+            <h2>⏸️ Paused</h2>
+            <p>The invasion awaits...</p>
+            <button class="btn-large btn-primary" onclick="resumeGame()">▶️ Resume</button>
+            <button class="btn-large btn-secondary" onclick="restartGame()">🔄 Restart</button>
+            <button class="btn-large btn-secondary" onclick="quitGame()">🏠 Quit</button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="game-over-screen">
+        <div class="screen-content">
+            <h2 id="gameOverTitle">Game Over!</h2>
+            <p>Final Score:</p>
+            <div class="final-score" id="finalScore">0</div>
+            <p id="highScoreMessage"></p>
+            <button class="btn-large btn-primary" onclick="restartGame()">🔄 Play Again</button>
+            <button class="btn-large btn-secondary" onclick="quitGame()">🏠 Main Menu</button>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="space-shooter.js"></script>
+</body>
+</html>

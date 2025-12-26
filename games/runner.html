@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endless Runner - Arcade Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ffd60a, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: 2px solid #ffd60a;
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .control-btn:hover {
+            background: #ffd60a;
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            color: #ffd60a;
+            font-weight: bold;
+        }
+
+        #gameCanvas {
+            border: 3px solid #ffd60a;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #87ceeb 0%, #e0f6ff 100%);
+            display: block;
+            box-shadow: 0 10px 40px rgba(255, 214, 10, 0.3);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .mobile-controls {
+            display: none;
+            margin-top: 20px;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .mobile-btn {
+            background: rgba(255, 214, 10, 0.2);
+            border: 2px solid #ffd60a;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            padding: 20px 50px;
+        }
+
+        .mobile-btn:active {
+            background: #ffd60a;
+            color: #000;
+            transform: scale(0.95);
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(15, 52, 96, 0.5);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 214, 10, 0.3);
+        }
+
+        .instructions h3 {
+            color: #ffd60a;
+            margin-bottom: 10px;
+        }
+
+        .instructions p {
+            color: #b8c1ec;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .game-over-screen, .pause-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .screen-content {
+            background: #16213e;
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid #ffd60a;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .screen-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffd60a, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .screen-content p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #b8c1ec;
+        }
+
+        .final-score {
+            font-size: 3rem;
+            color: #ffd60a;
+            margin: 20px 0;
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            margin: 10px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ffd60a, #ff006e);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 214, 10, 0.4);
+        }
+
+        .btn-secondary {
+            background: #0f3460;
+            color: white;
+            border: 2px solid #ffd60a;
+        }
+
+        .btn-secondary:hover {
+            background: #ffd60a;
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .mobile-controls {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">🏃 Endless Runner</h1>
+            <div class="game-controls">
+                <button id="pauseBtn" class="control-btn">⏸️ Pause</button>
+                <button id="restartBtn" class="control-btn">🔄 Restart</button>
+                <button id="fullscreenBtn" class="control-btn">⛶ Fullscreen</button>
+                <button id="quitBtn" class="control-btn">🏠 Quit</button>
+            </div>
+        </div>
+
+        <div class="game-stats">
+            <div class="stat">
+                Score: <span class="stat-value" id="scoreDisplay">0</span>
+            </div>
+            <div class="stat">
+                Distance: <span class="stat-value" id="distanceDisplay">0m</span>
+            </div>
+            <div class="stat">
+                Coins: <span class="stat-value" id="coinsDisplay">0</span>
+            </div>
+            <div class="stat">
+                High Score: <span class="stat-value" id="highScoreDisplay">0</span>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="1000" height="400"></canvas>
+
+        <div class="mobile-controls">
+            <button class="mobile-btn" id="mobileJump">⬆️ JUMP</button>
+        </div>
+
+        <div class="instructions">
+            <h3>🎮 How to Play</h3>
+            <p><strong>Desktop:</strong> Press Space or Up Arrow to jump</p>
+            <p><strong>Mobile:</strong> Tap the jump button or tap anywhere on screen</p>
+            <p><strong>Goal:</strong> Jump over obstacles and collect coins!</p>
+            <p><strong>Tips:</strong> The game gets faster as you progress. Perfect your timing!</p>
+        </div>
+    </div>
+
+    <!-- Pause Screen -->
+    <div id="pauseScreen" class="pause-screen">
+        <div class="screen-content">
+            <h2>⏸️ Paused</h2>
+            <p>Keep on running!</p>
+            <button class="btn-large btn-primary" onclick="resumeGame()">▶️ Resume</button>
+            <button class="btn-large btn-secondary" onclick="restartGame()">🔄 Restart</button>
+            <button class="btn-large btn-secondary" onclick="quitGame()">🏠 Quit</button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="game-over-screen">
+        <div class="screen-content">
+            <h2>💥 Game Over!</h2>
+            <p>Final Score:</p>
+            <div class="final-score" id="finalScore">0</div>
+            <p id="statsMessage"></p>
+            <p id="highScoreMessage"></p>
+            <button class="btn-large btn-primary" onclick="restartGame()">🔄 Play Again</button>
+            <button class="btn-large btn-secondary" onclick="quitGame()">🏠 Main Menu</button>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="runner.js"></script>
+</body>
+</html>

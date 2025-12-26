@@ -25,6 +25,30 @@ const GAMES = [
         icon: '👊',
         url: 'games/street-fighter.html',
         category: 'fighting'
+    },
+    {
+        id: 'space-shooter',
+        title: 'Space Shooter',
+        description: 'Defend Earth from alien invaders!',
+        icon: '🚀',
+        url: 'games/space-shooter.html',
+        category: 'shooter'
+    },
+    {
+        id: 'memory-match',
+        title: 'Memory Match',
+        description: 'Find matching pairs of cards!',
+        icon: '🎴',
+        url: 'games/memory-match.html',
+        category: 'puzzle'
+    },
+    {
+        id: 'runner',
+        title: 'Endless Runner',
+        description: 'Jump over obstacles and collect coins!',
+        icon: '🏃',
+        url: 'games/runner.html',
+        category: 'action'
     }
 ];
 
