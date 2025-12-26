@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brick Breaker - Arcade Games</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: 2px solid #8338ec;
+            background: transparent;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .control-btn:hover {
+            background: #8338ec;
+            transform: scale(1.05);
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            color: #06ffa5;
+            font-weight: bold;
+        }
+
+        #gameCanvas {
+            border: 3px solid #8338ec;
+            border-radius: 12px;
+            background: #0f3460;
+            display: block;
+            box-shadow: 0 10px 40px rgba(131, 56, 236, 0.3);
+            max-width: 100%;
+            height: auto;
+        }
+
+        .game-over-screen,
+        .pause-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .screen-content {
+            background: #16213e;
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid #8338ec;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .screen-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .screen-content p {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #b8c1ec;
+        }
+
+        .final-score {
+            font-size: 3rem;
+            color: #06ffa5;
+            margin: 20px 0;
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            margin: 10px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 0, 110, 0.4);
+        }
+
+        .btn-secondary {
+            background: #0f3460;
+            color: white;
+            border: 2px solid #3a86ff;
+        }
+
+        .btn-secondary:hover {
+            background: #3a86ff;
+        }
+
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .game-controls {
+                width: 100%;
+            }
+
+            .control-btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">🧱 Brick Breaker</h1>
+            <div class="game-controls">
+                <button id="pauseBtn" class="control-btn">⏸️ Pause</button>
+                <button id="restartBtn" class="control-btn">🔄 Restart</button>
+                <button id="fullscreenBtn" class="control-btn">⛶ Fullscreen</button>
+                <button id="quitBtn" class="control-btn">🏠 Quit</button>
+            </div>
+        </div>
+
+        <div class="game-stats">
+            <div class="stat">
+                Score: <span class="stat-value" id="scoreDisplay">0</span>
+            </div>
+            <div class="stat">
+                Lives: <span class="stat-value" id="livesDisplay">3</span>
+            </div>
+            <div class="stat">
+                Level: <span class="stat-value" id="levelDisplay">1</span>
+            </div>
+            <div class="stat">
+                High Score: <span class="stat-value" id="highScoreDisplay">0</span>
+            </div>
+        </div>
+
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+
+    <!-- Pause Screen -->
+    <div id="pauseScreen" class="pause-screen">
+        <div class="screen-content">
+            <h2>⏸️ Paused</h2>
+            <p>Take a break!</p>
+            <button class="btn-large btn-primary" onclick="resumeGame()">▶️ Resume</button>
+            <button class="btn-large btn-secondary" onclick="restartGame()">🔄 Restart</button>
+            <button class="btn-large btn-secondary" onclick="quitGame()">🏠 Quit</button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="game-over-screen">
+        <div class="screen-content">
+            <h2 id="gameOverTitle">Game Over!</h2>
+            <p>Final Score:</p>
+            <div class="final-score" id="finalScore">0</div>
+            <p id="highScoreMessage"></p>
+            <button class="btn-large btn-primary" onclick="restartGame()">🔄 Play Again</button>
+            <button class="btn-large btn-secondary" onclick="quitGame()">🏠 Main Menu</button>
+        </div>
+    </div>
+
+    <script src="../js/storage.js"></script>
+    <script src="brick-breaker.js"></script>
+</body>
+</html>
