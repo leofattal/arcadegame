@@ -40,9 +40,9 @@ let ball = {
     x: canvas.width / 2,
     y: paddle.y - BALL_RADIUS,
     radius: BALL_RADIUS,
-    speed: 4,
-    dx: 4 * (Math.random() > 0.5 ? 1 : -1),
-    dy: -4,
+    speed: 2.5,
+    dx: 2.5 * (Math.random() > 0.5 ? 1 : -1),
+    dy: -2.5,
     launched: false
 };
 
@@ -204,7 +204,7 @@ function isLevelComplete() {
 // Next level
 function nextLevel() {
     gameState.level++;
-    ball.speed += 0.5;
+    ball.speed += 0.2; // Reduced speed increase per level
     initBricks();
     resetBall();
     updateDisplay();
@@ -214,8 +214,8 @@ function nextLevel() {
 function resetBall() {
     ball.x = paddle.x + paddle.width / 2;
     ball.y = paddle.y - ball.radius;
-    ball.dx = (4 + gameState.level * 0.3) * (Math.random() > 0.5 ? 1 : -1);
-    ball.dy = -(4 + gameState.level * 0.3);
+    ball.dx = (2.5 + gameState.level * 0.15) * (Math.random() > 0.5 ? 1 : -1);
+    ball.dy = -(2.5 + gameState.level * 0.15);
     ball.launched = false;
 }
 

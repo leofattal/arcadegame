@@ -72,13 +72,13 @@ function initBackground() {
 function spawnObstacle() {
     if (obstacles.length > 0) {
         const lastObstacle = obstacles[obstacles.length - 1];
-        if (lastObstacle.x > canvas.width - 300) return;
+        if (lastObstacle.x > canvas.width - 400) return; // Increased spacing
     }
 
     const obstacleType = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
 
     obstacles.push({
-        x: canvas.width,
+        x: canvas.width + 50, // Start slightly off screen
         y: GROUND - obstacleType.height,
         width: obstacleType.width,
         height: obstacleType.height,
@@ -288,8 +288,8 @@ function update() {
         obstacle.x -= gameState.speed;
     });
 
-    if (obstacles.length === 0 || obstacles[obstacles.length - 1].x < canvas.width - 300) {
-        if (Math.random() < 0.02) {
+    if (obstacles.length === 0 || obstacles[obstacles.length - 1].x < canvas.width - 400) {
+        if (Math.random() < 0.015) { // Reduced spawn rate
             spawnObstacle();
         }
     }
@@ -324,10 +324,17 @@ function update() {
 
 // Check collision between two rectangles
 function checkCollision(rect1, rect2) {
-    return rect1.x < rect2.x + rect2.width &&
-           rect1.x + rect1.width > rect2.x &&
-           rect1.y < rect2.y + rect2.height &&
-           rect1.y + rect1.height > rect2.y;
+    // Adjust player hitbox when ducking
+    const playerY = player.isDucking ? rect1.y + 20 : rect1.y;
+    const playerHeight = player.isDucking ? rect1.height - 20 : rect1.height;
+
+    // Add small margin to make collision feel fair
+    const margin = 5;
+
+    return rect1.x + margin < rect2.x + rect2.width - margin &&
+           rect1.x + rect1.width - margin > rect2.x + margin &&
+           playerY + margin < rect2.y + rect2.height - margin &&
+           playerY + playerHeight - margin > rect2.y + margin;
 }
 
 // Draw everything
