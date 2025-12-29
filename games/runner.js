@@ -256,6 +256,8 @@ function update() {
     gameState.speed = 6 + Math.floor(gameState.distance / 500) * 0.5;
 
     // Update player
+    player.y += player.velocityY;
+
     if (player.y < GROUND) {
         player.velocityY += GRAVITY;
     } else {
@@ -263,7 +265,6 @@ function update() {
         player.velocityY = 0;
         player.isJumping = false;
     }
-    player.y += player.velocityY;
 
     // Update clouds
     clouds.forEach(cloud => {
