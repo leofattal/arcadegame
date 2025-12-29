@@ -79,7 +79,7 @@ function spawnObstacle() {
 
     obstacles.push({
         x: canvas.width + 50, // Start slightly off screen
-        y: GROUND - obstacleType.height,
+        y: GROUND + player.height - obstacleType.height, // Sit on visible ground
         width: obstacleType.width,
         height: obstacleType.height,
         color: obstacleType.color,
@@ -359,7 +359,7 @@ function gameLoop() {
 
 // Jump
 function jump() {
-    if (!player.isJumping && player.y === GROUND) {
+    if (!player.isJumping && player.y >= GROUND) {
         player.velocityY = -JUMP_POWER;
         player.isJumping = true;
     }
