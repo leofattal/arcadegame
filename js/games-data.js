@@ -49,6 +49,22 @@ const GAMES = [
         icon: '🏃',
         url: 'games/runner.html',
         category: 'action'
+    },
+    {
+        id: 'tetris',
+        title: 'Tetris',
+        description: 'Classic block-stacking puzzle game!',
+        icon: '🎮',
+        url: 'games/tetris.html',
+        category: 'puzzle'
+    },
+    {
+        id: 'pong',
+        title: 'Pong',
+        description: 'Classic arcade tennis against CPU!',
+        icon: '🏓',
+        url: 'games/pong.html',
+        category: 'sports'
     }
 ];
 

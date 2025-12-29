@@ -19,6 +19,8 @@ A web-based arcade gaming platform with **no sign-in required**. Play classic ar
 4. **🚀 Space Shooter** - Defend Earth from alien invaders with increasing difficulty
 5. **🎴 Memory Match** - Test your memory with matching pairs (3 difficulty modes)
 6. **🏃 Endless Runner** - Jump over obstacles and collect coins in this fast-paced game
+7. **🎮 Tetris** - Classic block-stacking puzzle with increasing speed
+8. **🏓 Pong** - Classic arcade tennis against AI opponent (3 difficulty levels)
 
 ## 🚀 Quick Start
 
